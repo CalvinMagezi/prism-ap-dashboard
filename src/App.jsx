@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
-// ─── Brand Logos ────────────────────────────────────────────────────────────
+// ─── Logos ────────────────────────────────────────────────────────────────────
 const PRISM_LOGO =
   "https://prismmarketing.co/wp-content/uploads/2023/03/prism-logo-new-logo.png";
 const AP_LOGO =
   "https://auntporridge.com/wp-content/uploads/2022/04/cropped-cropped-Logo-png-01-01-300x300.png";
 
-// ─── Design Tokens ──────────────────────────────────────────────────────────
+// ─── Tokens ───────────────────────────────────────────────────────────────────
 const C = {
   bg: "#FAFAFA",
   surface: "#FFFFFF",
@@ -31,29 +31,29 @@ const C = {
   textDim: "#A89CB4",
 };
 
-// ─── Data ────────────────────────────────────────────────────────────────────
+// ─── Data ─────────────────────────────────────────────────────────────────────
 const channelData = [
-  { name: "Activations",   revenue: 4800000,  pct: 39, color: C.prism  },
-  { name: "Supermarkets",  revenue: 4196000,  pct: 34, color: C.orange },
-  { name: "Retail Shops",  revenue: 2000000,  pct: 16, color: C.blue   },
-  { name: "Sales Rep",     revenue: 1311500,  pct: 11, color: C.purple },
+  { name: "Activations",  revenue: 4800000, pct: 39, color: C.prism  },
+  { name: "Supermarkets", revenue: 4196000, pct: 34, color: C.orange },
+  { name: "Retail Shops", revenue: 2000000, pct: 16, color: C.blue   },
+  { name: "Sales Rep",    revenue: 1311500, pct: 11, color: C.purple },
 ];
 
 const productData = [
-  { name: "PP Green 500g",  units: 529, color: C.green  },
-  { name: "BB Pink 500g",   units: 322, color: C.prism  },
-  { name: "AP Green 1kg",   units: 319, color: C.green  },
-  { name: "AP Pink 1kg",    units: 270, color: C.prism  },
-  { name: "Instapo",        units: 88,  color: C.orange },
-  { name: "AP BKT Green",   units: 53,  color: C.green  },
-  { name: "AP BKT Pink",    units: 17,  color: C.prism  },
+  { name: "PP Green 500g", units: 529, color: C.green  },
+  { name: "BB Pink 500g",  units: 322, color: C.prism  },
+  { name: "AP Green 1kg",  units: 319, color: C.green  },
+  { name: "AP Pink 1kg",   units: 270, color: C.prism  },
+  { name: "Instapo",       units: 88,  color: C.orange },
+  { name: "AP BKT Green",  units: 53,  color: C.green  },
+  { name: "AP BKT Pink",   units: 17,  color: C.prism  },
 ];
 
 const retailData = [
-  { name: "Crane Shoppers",   orders: 3 },
-  { name: "Abrah Supermarket",orders: 3 },
-  { name: "2K Soppers",       orders: 2 },
-  { name: "Faruku & Sons",    orders: 2 },
+  { name: "Crane Shoppers",    orders: 3 },
+  { name: "Abrah Supermarket", orders: 3 },
+  { name: "2K Soppers",        orders: 2 },
+  { name: "Faruku & Sons",     orders: 2 },
 ];
 
 const weeklyTrend = [
@@ -63,7 +63,7 @@ const weeklyTrend = [
   { week: "Wk 4", revenue: 4007500 },
 ];
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 const fmt = (n) => "UGX " + n.toLocaleString("en-UG");
 const totalRevenue = channelData.reduce((s, d) => s + d.revenue, 0);
 const totalUnits   = productData.reduce((s, d) => s + d.units, 0);
@@ -81,23 +81,35 @@ function useMedia(query) {
   return match;
 }
 
-function useAnimateIn() {
-  const [ready, setReady] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setReady(true), 80);
-    return () => clearTimeout(t);
-  }, []);
-  return ready;
+// ─── GaugeArc ─────────────────────────────────────────────────────────────────
+function GaugeArc({ value, size = 130 }) {
+  const dashLen = (value / 100) * 170;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <svg width={size} height={size * 0.58} viewBox="0 0 140 80">
+        <path d="M 12 72 A 58 58 0 0 1 128 72" fill="none" stroke={C.border}
+          strokeWidth="13" strokeLinecap="round" />
+        <path d="M 12 72 A 58 58 0 0 1 128 72" fill="none" stroke={C.prism}
+          strokeWidth="13" strokeLinecap="round"
+          strokeDasharray={`${dashLen} 188`}
+          style={{ transition: "stroke-dasharray 1s ease" }} />
+        <text x="70" y="64" textAnchor="middle" fill={C.text} fontSize="24"
+          fontWeight="700" fontFamily="Montserrat, sans-serif">{value}%</text>
+      </svg>
+      <span style={{ fontSize: 11, color: C.textDim, fontFamily: "Hind, sans-serif", marginTop: 2 }}>
+        Retail Conversion
+      </span>
+    </div>
+  );
 }
 
-// ─── Donut Chart ─────────────────────────────────────────────────────────────
+// ─── DonutChart ───────────────────────────────────────────────────────────────
 function DonutChart({ data, size }) {
   const cx = size / 2, cy = size / 2;
   const r = size * 0.37;
   const stroke = size * 0.11;
   const circumference = 2 * Math.PI * r;
   let cumulative = 0;
-
   const segments = data.map((d) => {
     const offset = cumulative;
     cumulative += d.pct;
@@ -108,8 +120,7 @@ function DonutChart({ data, size }) {
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
       <circle cx={cx} cy={cy} r={r} fill="none" stroke={C.borderLight} strokeWidth={stroke} />
       {segments.map((seg, i) => (
-        <circle
-          key={i} cx={cx} cy={cy} r={r} fill="none"
+        <circle key={i} cx={cx} cy={cy} r={r} fill="none"
           stroke={seg.color} strokeWidth={stroke}
           strokeDasharray={`${(seg.pct / 100) * circumference} ${circumference}`}
           strokeDashoffset={`${-(seg.offset / 100) * circumference}`}
@@ -129,7 +140,7 @@ function DonutChart({ data, size }) {
   );
 }
 
-// ─── Horizontal Bar ───────────────────────────────────────────────────────────
+// ─── BarH ─────────────────────────────────────────────────────────────────────
 function BarH({ value, max, color, animate }) {
   const pct = (value / max) * 100;
   return (
@@ -143,149 +154,22 @@ function BarH({ value, max, color, animate }) {
   );
 }
 
-// ─── Sparkline (Weekly Trend) ─────────────────────────────────────────────────
-function Sparkline({ data, width = 200, height = 52 }) {
-  const animate = useAnimateIn();
-  const max = Math.max(...data.map((d) => d.revenue));
-  const min = Math.min(...data.map((d) => d.revenue));
-  const pad = 6;
-  const w = width - pad * 2;
-  const h = height - pad * 2;
-  const pts = data.map((d, i) => {
-    const x = pad + (i / (data.length - 1)) * w;
-    const y = pad + (1 - (d.revenue - min) / (max - min || 1)) * h;
-    return [x, y];
-  });
-  const path = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p[0]},${p[1]}`).join(" ");
-  const fill = `${path} L${pts[pts.length - 1][0]},${height - pad} L${pts[0][0]},${height - pad} Z`;
-
-  return (
-    <svg width={width} height={height} style={{ overflow: "visible" }}>
-      <defs>
-        <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={C.prism} stopOpacity="0.18" />
-          <stop offset="100%" stopColor={C.prism} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      {animate && <path d={fill} fill="url(#sparkGrad)" />}
-      {animate && (
-        <path d={path} fill="none" stroke={C.prism} strokeWidth={2}
-          strokeLinejoin="round" strokeLinecap="round" />
-      )}
-      {animate && pts.map(([x, y], i) => (
-        <circle key={i} cx={x} cy={y} r={3} fill={C.prism} />
-      ))}
-    </svg>
-  );
-}
-
-// ─── KPI Card ─────────────────────────────────────────────────────────────────
-function KpiCard({ label, value, sub, accent, icon }) {
-  return (
-    <div style={{
-      background: C.surface, border: `1px solid ${C.border}`,
-      borderRadius: 16, padding: "20px 22px",
-      borderTop: `3px solid ${accent}`,
-      display: "flex", flexDirection: "column", gap: 6,
-    }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <span style={{ fontSize: 12, fontWeight: 600, color: C.textMuted, letterSpacing: "0.06em", textTransform: "uppercase" }}>{label}</span>
-        <span style={{ fontSize: 20 }}>{icon}</span>
-      </div>
-      <div style={{ fontFamily: "Montserrat, sans-serif", fontSize: 26, fontWeight: 800, color: C.text, lineHeight: 1.1 }}>{value}</div>
-      {sub && <div style={{ fontSize: 12, color: C.textMuted }}>{sub}</div>}
-    </div>
-  );
-}
-
-// ─── Section Card ─────────────────────────────────────────────────────────────
-function Card({ title, children, style }) {
-  return (
-    <div style={{
-      background: C.surface, border: `1px solid ${C.border}`,
-      borderRadius: 16, padding: "22px 22px 20px",
-      ...style,
-    }}>
-      {title && (
-        <div style={{ fontFamily: "Montserrat, sans-serif", fontSize: 13, fontWeight: 700,
-          color: C.textMid, letterSpacing: "0.05em", textTransform: "uppercase",
-          marginBottom: 16, }}>
-          {title}
-        </div>
-      )}
-      {children}
-    </div>
-  );
-}
-
-// ─── Channel Row ──────────────────────────────────────────────────────────────
-function ChannelRow({ d, maxRev, animate }) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-        <span style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 14, fontWeight: 500, color: C.textMid }}>
-          <span style={{ width: 9, height: 9, borderRadius: "50%", background: d.color, flexShrink: 0 }} />
-          {d.name}
-        </span>
-        <span style={{ fontFamily: "Montserrat, sans-serif", fontSize: 13, fontWeight: 700, color: C.text }}>{d.pct}%</span>
-      </div>
-      <BarH value={d.revenue} max={maxRev} color={d.color} animate={animate} />
-      <div style={{ fontSize: 11, color: C.textDim, textAlign: "right" }}>{fmt(d.revenue)}</div>
-    </div>
-  );
-}
-
-// ─── Product Row ──────────────────────────────────────────────────────────────
-function ProductRow({ d, maxUnits, animate }) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 13, color: C.textMid }}>
-          <span style={{ width: 8, height: 8, borderRadius: 2, background: d.color, flexShrink: 0 }} />
-          {d.name}
-        </span>
-        <span style={{ fontFamily: "Montserrat, sans-serif", fontSize: 13, fontWeight: 700, color: C.text }}>{d.units.toLocaleString()}</span>
-      </div>
-      <BarH value={d.units} max={maxUnits} color={d.color} animate={animate} />
-    </div>
-  );
-}
-
-// ─── Retail Badge ─────────────────────────────────────────────────────────────
-function RetailBadge({ d }) {
-  return (
-    <div style={{
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "10px 14px", borderRadius: 10,
-      background: C.surfaceAlt, border: `1px solid ${C.borderLight}`,
-    }}>
-      <span style={{ fontSize: 13, color: C.textMid, fontWeight: 500 }}>{d.name}</span>
-      <span style={{
-        fontFamily: "Montserrat, sans-serif", fontSize: 12, fontWeight: 700,
-        color: C.orange, background: C.orangeSoft,
-        padding: "2px 9px", borderRadius: 20,
-      }}>
-        {d.orders} orders
-      </span>
-    </div>
-  );
-}
-
-// ─── Weekly Bar Chart ─────────────────────────────────────────────────────────
+// ─── WeeklyBars ───────────────────────────────────────────────────────────────
 function WeeklyBars({ data, animate }) {
   const max = Math.max(...data.map((d) => d.revenue));
   return (
-    <div style={{ display: "flex", gap: 10, alignItems: "flex-end", height: 80 }}>
+    <div style={{ display: "flex", gap: 10, alignItems: "flex-end", height: 90 }}>
       {data.map((d, i) => {
         const pct = (d.revenue / max) * 100;
         return (
-          <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
+          <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
             <div style={{ fontSize: 10, color: C.textDim, fontFamily: "Montserrat, sans-serif", fontWeight: 600 }}>
               {(d.revenue / 1e6).toFixed(1)}M
             </div>
-            <div style={{ width: "100%", background: C.borderLight, borderRadius: 6, overflow: "hidden", height: 52 }}>
+            <div style={{ width: "100%", background: C.borderLight, borderRadius: 6, overflow: "hidden", height: 56 }}>
               <div style={{
-                width: "100%", background: `linear-gradient(180deg, ${C.prism}, ${C.prismDark})`,
+                width: "100%",
+                background: `linear-gradient(180deg, ${C.prism}, ${C.prismDark})`,
                 borderRadius: 6,
                 height: animate ? `${pct}%` : "0%",
                 marginTop: animate ? `${100 - pct}%` : "100%",
@@ -300,74 +184,171 @@ function WeeklyBars({ data, animate }) {
   );
 }
 
-// ─── Main Dashboard ───────────────────────────────────────────────────────────
-export default function App() {
-  const isMobile = useMedia("(max-width: 680px)");
-  const isTablet = useMedia("(max-width: 1024px)");
-  const animate = useAnimateIn();
+// ─── KPI ─────────────────────────────────────────────────────────────────────
+function KPI({ label, value, sub, icon, color, softColor, mobile }) {
+  return (
+    <div style={{
+      background: C.surface,
+      border: `1px solid ${C.border}`,
+      borderRadius: 14,
+      padding: mobile ? "14px 14px" : "20px 22px",
+      display: "flex", alignItems: "center", gap: mobile ? 12 : 16,
+      flex: mobile ? "1 1 calc(50% - 4px)" : "1 1 0%",
+      minWidth: mobile ? 0 : 200,
+      boxShadow: "0 1px 3px rgba(26,16,35,0.04)",
+    }}>
+      <div style={{
+        width: mobile ? 38 : 44, height: mobile ? 38 : 44, borderRadius: 10,
+        background: softColor, display: "flex", alignItems: "center",
+        justifyContent: "center", fontSize: mobile ? 17 : 19, flexShrink: 0,
+      }}>{icon}</div>
+      <div style={{ minWidth: 0 }}>
+        <div style={{
+          color: C.textDim, fontSize: mobile ? 9 : 11, fontWeight: 600,
+          letterSpacing: "0.05em", textTransform: "uppercase",
+          fontFamily: "Hind, sans-serif", marginBottom: 2,
+        }}>{label}</div>
+        <div style={{
+          color: color || C.text, fontSize: mobile ? 16 : 21,
+          fontWeight: 700, lineHeight: 1.1, fontFamily: "Montserrat, sans-serif",
+        }}>{value}</div>
+        {sub && (
+          <div style={{ color: C.textMuted, fontSize: mobile ? 9 : 11, marginTop: 2, fontFamily: "Hind, sans-serif" }}>
+            {sub}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Card ─────────────────────────────────────────────────────────────────────
+function Card({ title, children, style: s }) {
+  return (
+    <div style={{
+      background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16,
+      padding: "22px", boxShadow: "0 1px 4px rgba(26,16,35,0.04)", ...s,
+    }}>
+      {title && (
+        <div style={{
+          fontSize: 11, fontWeight: 700, color: C.textMuted, letterSpacing: "0.06em",
+          textTransform: "uppercase", marginBottom: 16, fontFamily: "Montserrat, sans-serif",
+        }}>{title}</div>
+      )}
+      {children}
+    </div>
+  );
+}
+
+// ─── ChannelRow ───────────────────────────────────────────────────────────────
+function ChannelRow({ d, maxRev, animate }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+        <span style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 14, fontWeight: 500, color: C.textMid }}>
+          <span style={{ width: 9, height: 9, borderRadius: "50%", background: d.color, flexShrink: 0 }} />
+          {d.name}
+        </span>
+        <span style={{ fontFamily: "Montserrat, sans-serif", fontSize: 13, fontWeight: 700, color: C.text }}>
+          {d.pct}%
+        </span>
+      </div>
+      <BarH value={d.revenue} max={maxRev} color={d.color} animate={animate} />
+      <div style={{ fontSize: 11, color: C.textDim, textAlign: "right" }}>{fmt(d.revenue)}</div>
+    </div>
+  );
+}
+
+// ─── ProductRow ───────────────────────────────────────────────────────────────
+function ProductRow({ d, maxUnits, animate }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 13, color: C.textMid }}>
+          <span style={{ width: 8, height: 8, borderRadius: 2, background: d.color, flexShrink: 0 }} />
+          {d.name}
+        </span>
+        <span style={{ fontFamily: "Montserrat, sans-serif", fontSize: 13, fontWeight: 700, color: C.text }}>
+          {d.units.toLocaleString()}
+        </span>
+      </div>
+      <BarH value={d.units} max={maxUnits} color={d.color} animate={animate} />
+    </div>
+  );
+}
+
+// ─── Dashboard ────────────────────────────────────────────────────────────────
+export default function Dashboard() {
+  const [animate, setAnimate] = useState(false);
+  const mobile = useMedia("(max-width: 680px)");
+  const tablet = useMedia("(max-width: 960px)");
+
+  useEffect(() => {
+    const t = setTimeout(() => setAnimate(true), 300);
+    return () => clearTimeout(t);
+  }, []);
 
   const maxRev   = Math.max(...channelData.map((d) => d.revenue));
   const maxUnits = Math.max(...productData.map((d) => d.units));
-
-  const donutSize = isMobile ? 160 : 180;
+  const donutSize = mobile ? 140 : 170;
 
   return (
-    <div style={{ background: C.bg, minHeight: "100svh", padding: isMobile ? "0 0 32px" : "0 0 48px" }}>
+    <div style={{
+      fontFamily: "'Hind', 'Segoe UI', sans-serif",
+      background: C.bg, color: C.text, minHeight: "100vh",
+      padding: mobile ? "14px 10px 32px" : "28px 24px 48px",
+    }}>
 
-      {/* ── Header ── */}
-      <header style={{
-        background: C.surface, borderBottom: `1px solid ${C.border}`,
-        padding: isMobile ? "14px 16px" : "16px 32px",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        position: "sticky", top: 0, zIndex: 10,
-        backdropFilter: "blur(12px)",
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 12 : 20 }}>
-          <img src={PRISM_LOGO} alt="Prism Marketing" height={isMobile ? 28 : 36}
-            style={{ objectFit: "contain" }} />
-          <div style={{ width: 1, height: 30, background: C.border }} />
-          <img src={AP_LOGO} alt="Aunt Porridge" height={isMobile ? 28 : 36}
-            style={{ objectFit: "contain" }} />
-        </div>
-        <div style={{ textAlign: "right" }}>
-          <div style={{ fontFamily: "Montserrat, sans-serif", fontSize: isMobile ? 13 : 15, fontWeight: 700, color: C.text }}>
-            Sales Dashboard
+      {/* ── Logo Bar ── */}
+      <div style={{ maxWidth: 1100, margin: "0 auto 6px" }}>
+        <div style={{
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+          marginBottom: mobile ? 14 : 20, flexWrap: "wrap", gap: 10,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: mobile ? 10 : 16 }}>
+            <img src={PRISM_LOGO} alt="Prism Marketing"
+              height={mobile ? 28 : 38} style={{ objectFit: "contain" }} />
+            <div style={{ width: 1, height: 32, background: C.border }} />
+            <img src={AP_LOGO} alt="Aunt Porridge Uganda"
+              height={mobile ? 28 : 38} style={{ objectFit: "contain" }} />
           </div>
-          <div style={{ fontSize: 11, color: C.textDim }}>March 2025 · Field Report</div>
+          <div style={{ textAlign: "right" }}>
+            <div style={{
+              fontFamily: "Montserrat, sans-serif", fontWeight: 700,
+              fontSize: mobile ? 13 : 16, color: C.text,
+            }}>
+              Field Sales Report
+            </div>
+            <div style={{ fontSize: 11, color: C.textDim }}>March 2025 · Uganda</div>
+          </div>
         </div>
-      </header>
-
-      {/* ── Body ── */}
-      <main style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "20px 12px" : "28px 28px" }}>
 
         {/* ── KPI Row ── */}
         <div style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
-          gap: isMobile ? 10 : 14,
-          marginBottom: isMobile ? 20 : 24,
+          display: "flex", flexWrap: "wrap", gap: mobile ? 8 : 12,
+          marginBottom: mobile ? 16 : 22,
         }}>
-          <KpiCard label="Total Revenue"  value="UGX 12.3M"   sub="All channels"        accent={C.prism}  icon="💰" />
-          <KpiCard label="Total Units"    value={totalUnits.toLocaleString()} sub="SKUs sold"  accent={C.orange} icon="📦" />
-          <KpiCard label="Active Channels" value="4"          sub="Activations leading"  accent={C.blue}   icon="📡" />
-          <KpiCard label="Supermarkets"   value="10"          sub="Unique retailers"      accent={C.green}  icon="🏪" />
+          <KPI label="Total Revenue"    value={fmt(totalRevenue)}  sub="All channels"       icon="💰" color={C.prism}  softColor={C.prismSoft}  mobile={mobile} />
+          <KPI label="Units Sold"       value={totalUnits.toLocaleString()} sub="7 SKUs"     icon="📦" color={C.orange} softColor={C.orangeSoft} mobile={mobile} />
+          <KPI label="Active Channels"  value="4"                  sub="Activations leading" icon="📡" color={C.blue}   softColor={C.blueSoft}   mobile={mobile} />
+          <KPI label="Supermarkets"     value="10"                 sub="Unique retailers"    icon="🏪" color={C.green}  softColor={C.greenSoft}  mobile={mobile} />
         </div>
 
-        {/* ── Revenue + Trend ── */}
+        {/* ── Row 2: Channel Donut + Weekly Trend ── */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: isTablet ? "1fr" : "1.3fr 1fr",
-          gap: isMobile ? 12 : 16,
-          marginBottom: isMobile ? 12 : 16,
+          gridTemplateColumns: tablet ? "1fr" : "1.35fr 1fr",
+          gap: mobile ? 12 : 16,
+          marginBottom: mobile ? 12 : 16,
         }}>
 
-          {/* Channel Donut + Breakdown */}
+          {/* Channel breakdown */}
           <Card title="Revenue by Channel">
-            <div style={{ display: "flex", gap: isMobile ? 16 : 28, alignItems: "center", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: mobile ? 14 : 28, alignItems: "center", flexWrap: "wrap" }}>
               <div style={{ flexShrink: 0 }}>
                 <DonutChart data={channelData} size={donutSize} />
               </div>
-              <div style={{ flex: 1, minWidth: 160, display: "flex", flexDirection: "column", gap: 12 }}>
+              <div style={{ flex: 1, minWidth: 155, display: "flex", flexDirection: "column", gap: 13 }}>
                 {channelData.map((d) => (
                   <ChannelRow key={d.name} d={d} maxRev={maxRev} animate={animate} />
                 ))}
@@ -375,103 +356,133 @@ export default function App() {
             </div>
           </Card>
 
-          {/* Weekly Trend */}
+          {/* Weekly trend + gauge */}
           <Card title="Weekly Revenue Trend">
             <WeeklyBars data={weeklyTrend} animate={animate} />
-            <div style={{ marginTop: 18, paddingTop: 16, borderTop: `1px solid ${C.borderLight}` }}>
-              <div style={{ fontSize: 12, color: C.textMuted, marginBottom: 4 }}>Avg per week</div>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontSize: 22, fontWeight: 800, color: C.text }}>
-                UGX {(totalRevenue / weeklyTrend.length / 1e6).toFixed(2)}M
+            <div style={{
+              marginTop: 18, paddingTop: 14,
+              borderTop: `1px solid ${C.borderLight}`,
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              flexWrap: "wrap", gap: 12,
+            }}>
+              <div>
+                <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 3 }}>Avg / week</div>
+                <div style={{ fontFamily: "Montserrat, sans-serif", fontSize: 20, fontWeight: 800, color: C.text }}>
+                  {fmt(Math.round(totalRevenue / weeklyTrend.length))}
+                </div>
               </div>
-              <div style={{ marginTop: 12 }}>
-                <Sparkline data={weeklyTrend} width={isTablet ? 320 : 240} height={52} />
-              </div>
+              <GaugeArc value={animate ? 68 : 0} size={mobile ? 110 : 130} />
             </div>
           </Card>
         </div>
 
-        {/* ── Products + Retail ── */}
+        {/* ── Row 3: Products + Retail + Summary ── */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: isTablet ? "1fr" : "1.5fr 1fr",
-          gap: isMobile ? 12 : 16,
+          gridTemplateColumns: tablet ? "1fr" : "1.5fr 1fr",
+          gap: mobile ? 12 : 16,
         }}>
 
-          {/* Product Units */}
+          {/* Product units */}
           <Card title="Units Sold by SKU">
-            <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {productData.map((d) => (
                 <ProductRow key={d.name} d={d} maxUnits={maxUnits} animate={animate} />
               ))}
             </div>
-            <div style={{ marginTop: 18, paddingTop: 14, borderTop: `1px solid ${C.borderLight}`,
-              display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 12, color: C.textMuted }}>Total units</span>
+            <div style={{
+              marginTop: 18, paddingTop: 12, borderTop: `1px solid ${C.borderLight}`,
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+            }}>
+              <span style={{ fontSize: 12, color: C.textMuted }}>Total units dispatched</span>
               <span style={{ fontFamily: "Montserrat, sans-serif", fontSize: 16, fontWeight: 800, color: C.text }}>
                 {totalUnits.toLocaleString()} units
               </span>
             </div>
           </Card>
 
-          {/* Retail Supermarkets */}
-          <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? 12 : 16 }}>
+          {/* Right column: retail + gradient summary */}
+          <div style={{ display: "flex", flexDirection: "column", gap: mobile ? 12 : 16 }}>
+
+            {/* Top supermarkets */}
             <Card title="Top Supermarkets">
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {retailData.map((d) => (
-                  <RetailBadge key={d.name} d={d} />
+                  <div key={d.name} style={{
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                    padding: "10px 12px", borderRadius: 10,
+                    background: C.surfaceAlt, border: `1px solid ${C.borderLight}`,
+                  }}>
+                    <span style={{ fontSize: 13, color: C.textMid, fontWeight: 500 }}>{d.name}</span>
+                    <span style={{
+                      fontFamily: "Montserrat, sans-serif", fontSize: 12, fontWeight: 700,
+                      color: C.orange, background: C.orangeSoft, padding: "2px 9px", borderRadius: 20,
+                    }}>
+                      {d.orders} orders
+                    </span>
+                  </div>
                 ))}
               </div>
-              <div style={{ marginTop: 14, paddingTop: 12, borderTop: `1px solid ${C.borderLight}`,
-                fontSize: 12, color: C.textMuted, textAlign: "center" }}>
-                10 supermarkets total · 4 shown above
+              <div style={{
+                marginTop: 12, paddingTop: 10, borderTop: `1px solid ${C.borderLight}`,
+                fontSize: 11, color: C.textDim, textAlign: "center",
+              }}>
+                10 supermarkets total · 4 shown
               </div>
             </Card>
 
-            {/* Summary stat card */}
+            {/* Gradient summary */}
             <div style={{
               background: `linear-gradient(135deg, ${C.prism} 0%, ${C.prismDark} 100%)`,
               borderRadius: 16, padding: "20px 22px", color: "#fff",
+              flex: 1,
             }}>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", opacity: 0.75, marginBottom: 8 }}>
-                Activations Revenue
+              <div style={{
+                fontSize: 10, fontWeight: 600, letterSpacing: "0.08em",
+                textTransform: "uppercase", opacity: 0.75, marginBottom: 8,
+              }}>
+                #1 Channel — Activations
               </div>
               <div style={{ fontFamily: "Montserrat, sans-serif", fontSize: 28, fontWeight: 800, lineHeight: 1.1 }}>
-                UGX 4.8M
+                {fmt(channelData[0].revenue)}
               </div>
               <div style={{ fontSize: 13, opacity: 0.8, marginTop: 4 }}>
-                39% of total · #1 channel
+                {channelData[0].pct}% of total revenue
               </div>
-              <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.2)",
-                display: "flex", justifyContent: "space-between" }}>
-                <div>
-                  <div style={{ fontSize: 10, opacity: 0.7, textTransform: "uppercase", letterSpacing: "0.06em" }}>Supermarkets</div>
-                  <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 15 }}>UGX 4.2M</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 10, opacity: 0.7, textTransform: "uppercase", letterSpacing: "0.06em" }}>Retail</div>
-                  <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 15 }}>UGX 2.0M</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 10, opacity: 0.7, textTransform: "uppercase", letterSpacing: "0.06em" }}>Sales Rep</div>
-                  <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 15 }}>UGX 1.3M</div>
-                </div>
+              <div style={{
+                marginTop: 16, paddingTop: 14, borderTop: "1px solid rgba(255,255,255,0.18)",
+                display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8,
+              }}>
+                {channelData.slice(1).map((d) => (
+                  <div key={d.name}>
+                    <div style={{ fontSize: 9, opacity: 0.65, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                      {d.name}
+                    </div>
+                    <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 13, marginTop: 2 }}>
+                      {(d.revenue / 1e6).toFixed(1)}M
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
+
           </div>
         </div>
 
         {/* ── Footer ── */}
-        <div style={{ marginTop: 28, display: "flex", alignItems: "center", justifyContent: "space-between",
-          flexWrap: "wrap", gap: 8 }}>
+        <div style={{
+          marginTop: 28, display: "flex", alignItems: "center",
+          justifyContent: "space-between", flexWrap: "wrap", gap: 8,
+        }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <img src={PRISM_LOGO} alt="Prism" height={18} style={{ objectFit: "contain" }} />
+            <img src={PRISM_LOGO} alt="Prism" height={16} style={{ objectFit: "contain" }} />
             <span style={{ fontSize: 11, color: C.textDim }}>Powered by Prism Marketing</span>
           </div>
-          <div style={{ fontSize: 11, color: C.textDim }}>
+          <span style={{ fontSize: 11, color: C.textDim }}>
             Data: March 2025 · Aunt Porridge Uganda
-          </div>
+          </span>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
