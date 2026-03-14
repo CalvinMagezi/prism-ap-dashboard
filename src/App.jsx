@@ -351,37 +351,21 @@ export default function Dashboard() {
               <div style={{ flexShrink: 0 }}>
                 <DonutChart data={channelData} size={donutSize} />
               </div>
-              <div style={{ flex: 1, width: "100%", minWidth: 0, display: "flex", flexDirection: "column", gap: 0 }}>
+              <div style={{ flex: 1, width: "100%", minWidth: 0, display: "flex", flexDirection: "column", gap: 4 }}>
                 {channelData.map((ch, i) => (
                   <div key={i} style={{
-                    display: "flex", alignItems: "center", gap: 10,
                     padding: "9px 12px",
                     background: i % 2 === 0 ? C.prismSofter : "transparent",
                     borderRadius: 10,
-                    marginBottom: i < channelData.length - 1 ? 4 : 0,
                   }}>
-                    <div style={{
-                      width: 10, height: 10, borderRadius: 3,
-                      background: ch.color, flexShrink: 0,
-                    }} />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{
-                        display: "flex", justifyContent: "space-between",
-                        alignItems: "baseline", marginBottom: 4,
-                      }}>
-                        <span style={{ fontSize: 13, color: C.textMid, fontWeight: 500 }}>{ch.name}</span>
-                        <span style={{
-                          fontFamily: "Montserrat, sans-serif", fontSize: 12,
-                          fontWeight: 700, color: C.text,
-                        }}>
-                          {ch.pct}%
-                        </span>
-                      </div>
-                      <BarH value={ch.revenue} max={maxRev} color={ch.color} animate={animate} />
-                      <div style={{ fontSize: 10, color: C.textDim, textAlign: "right", marginTop: 2 }}>
-                        {fmt(ch.revenue)}
-                      </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", fontSize: 13, fontFamily: "Hind, sans-serif" }}>
+                      <span style={{ display: "flex", alignItems: "center", gap: 7, color: C.text, fontWeight: 600 }}>
+                        <span style={{ width: 9, height: 9, borderRadius: 3, background: ch.color, flexShrink: 0 }} />
+                        {ch.name}
+                      </span>
+                      <span style={{ color: ch.color, fontWeight: 700, fontFamily: "Montserrat, sans-serif", fontSize: 14 }}>{ch.pct}%</span>
                     </div>
+                    <div style={{ fontSize: 11, color: C.textDim, fontFamily: "Hind, sans-serif", paddingLeft: 16, marginTop: 2 }}>{fmt(ch.revenue)}</div>
                   </div>
                 ))}
               </div>
@@ -410,113 +394,87 @@ export default function Dashboard() {
             </div>
           </Card>
 
-          {/* Product Units */}
-          <Card title="Units Sold by SKU">
-            <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
-              {productData.map((d, i) => (
-                <div key={i} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 13, color: C.textMid }}>
-                      <span style={{ width: 8, height: 8, borderRadius: 2, background: d.color, flexShrink: 0 }} />
-                      {d.name}
+          {/* Product Performance */}
+          <Card title="Product Performance (Units Sold)">
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {productData.map((p, i) => (
+                <div key={i}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 5, fontFamily: "Hind, sans-serif" }}>
+                    <span style={{ color: C.textMid, fontWeight: 500, display: "flex", alignItems: "center", gap: 7 }}>
+                      <span style={{ width: 8, height: 8, borderRadius: 2, background: p.color, flexShrink: 0 }} />
+                      {p.name}
                     </span>
-                    <span style={{
-                      fontFamily: "Montserrat, sans-serif", fontSize: 13,
-                      fontWeight: 700, color: C.text,
-                    }}>
-                      {d.units.toLocaleString()}
-                    </span>
+                    <span style={{ color: p.color, fontWeight: 700, fontFamily: "Montserrat, sans-serif" }}>{p.units}</span>
                   </div>
-                  <BarH value={d.units} max={maxUnits} color={d.color} animate={animate} />
+                  <BarH value={p.units} max={maxUnits} color={p.color} animate={animate} />
                 </div>
               ))}
-            </div>
-            <div style={{
-              marginTop: 18, paddingTop: 12, borderTop: `1px solid ${C.borderLight}`,
-              display: "flex", justifyContent: "space-between", alignItems: "center",
-            }}>
-              <span style={{ fontSize: 12, color: C.textMuted }}>Total units dispatched</span>
-              <span style={{
-                fontFamily: "Montserrat, sans-serif", fontSize: 16,
-                fontWeight: 800, color: C.text,
+              <div style={{
+                marginTop: 4, padding: "10px 14px", background: C.orangeSoft, borderRadius: 10,
+                fontSize: 12, color: C.textMid, fontFamily: "Hind, sans-serif", lineHeight: 1.5,
+                borderLeft: `3px solid ${C.orange}`,
               }}>
-                {totalUnits.toLocaleString()} units
-              </span>
+                <strong>Insight:</strong> 500g packs dominate (53% of units) — smaller, affordable packaging drives Jinja demand.
+              </div>
             </div>
           </Card>
 
-          {/* Right column: supermarkets + gradient summary */}
-          <div style={{ display: "flex", flexDirection: "column", gap: mobile ? 10 : 14 }}>
+          {/* Retail Distribution & Conversion */}
+          <Card title="Retail Distribution & Conversion">
+            <div style={{
+              display: "flex", gap: mobile ? 14 : 24, alignItems: "flex-start",
+              flexDirection: mobile ? "column" : "row",
+            }}>
+              {/* Gauge + label */}
+              <div style={{
+                display: "flex", flexDirection: "column", alignItems: "center",
+                gap: 12, flexShrink: 0,
+                alignSelf: mobile ? "center" : "flex-start",
+              }}>
+                <GaugeArc value={animate ? 24 : 0} size={mobile ? 116 : 132} />
+                <div style={{
+                  textAlign: "center", background: C.prismSoft, borderRadius: 8,
+                  padding: "7px 14px", fontSize: 11, fontFamily: "Hind, sans-serif", color: C.textMid,
+                }}>
+                  <strong style={{ color: C.prism }}>4</strong> of <strong>17</strong> shops ordering
+                </div>
+              </div>
 
-            <Card title="Top Supermarkets">
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {retailData.map((d, i) => (
+              {/* Shop list */}
+              <div style={{ flex: 1, width: "100%", minWidth: 0 }}>
+                <div style={{
+                  fontSize: 10, color: C.textDim, marginBottom: 8, fontWeight: 600,
+                  fontFamily: "Montserrat, sans-serif", letterSpacing: "0.05em", textTransform: "uppercase",
+                }}>
+                  Confirmed Ordering Shops
+                </div>
+                {retailData.map((r, i) => (
                   <div key={i} style={{
-                    display: "flex", alignItems: "center", justifyContent: "space-between",
-                    padding: "10px 12px", borderRadius: 10,
-                    background: C.surfaceAlt, border: `1px solid ${C.borderLight}`,
+                    display: "flex", justifyContent: "space-between", alignItems: "center",
+                    padding: "9px 12px", background: C.bg, borderRadius: 10, marginBottom: 6,
+                    border: `1px solid ${C.borderLight}`,
                   }}>
-                    <span style={{ fontSize: 13, color: C.textMid, fontWeight: 500 }}>{d.name}</span>
+                    <span style={{ fontSize: 13, color: C.textMid, fontWeight: 500, fontFamily: "Hind, sans-serif" }}>
+                      {r.name}
+                    </span>
                     <span style={{
-                      fontFamily: "Montserrat, sans-serif", fontSize: 12, fontWeight: 700,
-                      color: C.orange, background: C.orangeSoft,
-                      padding: "2px 9px", borderRadius: 20,
+                      fontSize: 11, fontWeight: 700, color: C.prism, fontFamily: "Montserrat, sans-serif",
+                      background: C.prismSoft, padding: "3px 10px", borderRadius: 6,
                     }}>
-                      {d.orders} orders
+                      {r.orders} orders
                     </span>
                   </div>
                 ))}
-              </div>
-              <div style={{
-                marginTop: 12, paddingTop: 10, borderTop: `1px solid ${C.borderLight}`,
-                fontSize: 11, color: C.textDim, textAlign: "center",
-              }}>
-                10 supermarkets total · 4 shown above
-              </div>
-            </Card>
-
-            {/* Gradient summary */}
-            <div style={{
-              background: `linear-gradient(135deg, ${C.prism} 0%, ${C.prismDark} 100%)`,
-              borderRadius: 16, padding: "20px 22px", color: "#fff", flex: 1,
-            }}>
-              <div style={{
-                fontSize: 10, fontWeight: 600, letterSpacing: "0.08em",
-                textTransform: "uppercase", opacity: 0.75, marginBottom: 8,
-              }}>
-                #1 Channel — Activations
-              </div>
-              <div style={{
-                fontFamily: "Montserrat, sans-serif", fontSize: 28,
-                fontWeight: 800, lineHeight: 1.1,
-              }}>
-                {fmt(channelData[0].revenue)}
-              </div>
-              <div style={{ fontSize: 13, opacity: 0.8, marginTop: 4 }}>
-                {channelData[0].pct}% of total revenue
-              </div>
-              <div style={{
-                marginTop: 16, paddingTop: 14,
-                borderTop: "1px solid rgba(255,255,255,0.18)",
-                display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8,
-              }}>
-                {channelData.slice(1).map((d) => (
-                  <div key={d.name}>
-                    <div style={{ fontSize: 9, opacity: 0.65, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                      {d.name}
-                    </div>
-                    <div style={{
-                      fontFamily: "Montserrat, sans-serif", fontWeight: 700,
-                      fontSize: 13, marginTop: 2,
-                    }}>
-                      {(d.revenue / 1e6).toFixed(1)}M
-                    </div>
-                  </div>
-                ))}
+                <div style={{
+                  marginTop: 8, padding: "10px 14px", background: C.prismSoft, borderRadius: 10,
+                  fontSize: 12, color: C.textMid, fontFamily: "Hind, sans-serif", lineHeight: 1.5,
+                  borderLeft: `3px solid ${C.prism}`,
+                }}>
+                  <strong>Opportunity:</strong> 13 of 17 shops visited have <em>not yet ordered</em> — strong pipeline for follow-up visits.
+                </div>
               </div>
             </div>
-
-          </div>
+          </Card>
         </div>
 
         {/* ── Footer ── */}
