@@ -270,12 +270,10 @@ export default function Dashboard() {
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: mobile ? 10 : 16 }}>
             <img src={PRISM_LOGO} alt="Prism Marketing"
-              style={{ height: mobile ? 28 : 40, objectFit: "contain" }}
-              crossOrigin="anonymous" />
+              style={{ height: mobile ? 28 : 40, objectFit: "contain" }} />
             <div style={{ width: 1, height: mobile ? 22 : 30, background: C.border }} />
             <img src={AP_LOGO} alt="Aunt Porridge"
-              style={{ height: mobile ? 34 : 46, objectFit: "contain", borderRadius: 6 }}
-              crossOrigin="anonymous" />
+              style={{ height: mobile ? 34 : 46, objectFit: "contain", borderRadius: 6 }} />
           </div>
           <div style={{
             background: C.prismSoft, border: `1px solid ${C.border}`,
@@ -483,7 +481,7 @@ export default function Dashboard() {
           justifyContent: "space-between", flexWrap: "wrap", gap: 8,
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <img src={PRISM_LOGO} alt="Prism" height={16} style={{ objectFit: "contain" }} />
+            <img src={PRISM_LOGO} alt="Prism" style={{ height: 16, objectFit: "contain" }} />
             <span style={{ fontSize: 11, color: C.textDim }}>Powered by Prism Marketing</span>
           </div>
           <span style={{ fontSize: 11, color: C.textDim }}>
