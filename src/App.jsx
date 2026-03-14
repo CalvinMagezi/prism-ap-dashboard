@@ -144,7 +144,7 @@ function DonutChart({ data, size }) {
 function BarH({ value, max, color, animate }) {
   const pct = (value / max) * 100;
   return (
-    <div style={{ height: 7, borderRadius: 4, background: C.borderLight, width: "100%", overflow: "hidden" }}>
+    <div style={{ height: 6, borderRadius: 4, background: C.borderLight, width: "100%", overflow: "hidden" }}>
       <div style={{
         height: "100%", borderRadius: 4, background: color,
         width: animate ? `${pct}%` : "0%",
@@ -240,43 +240,6 @@ function Card({ title, children, style: s }) {
   );
 }
 
-// ─── ChannelRow ───────────────────────────────────────────────────────────────
-function ChannelRow({ d, maxRev, animate }) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-        <span style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 14, fontWeight: 500, color: C.textMid }}>
-          <span style={{ width: 9, height: 9, borderRadius: "50%", background: d.color, flexShrink: 0 }} />
-          {d.name}
-        </span>
-        <span style={{ fontFamily: "Montserrat, sans-serif", fontSize: 13, fontWeight: 700, color: C.text }}>
-          {d.pct}%
-        </span>
-      </div>
-      <BarH value={d.revenue} max={maxRev} color={d.color} animate={animate} />
-      <div style={{ fontSize: 11, color: C.textDim, textAlign: "right" }}>{fmt(d.revenue)}</div>
-    </div>
-  );
-}
-
-// ─── ProductRow ───────────────────────────────────────────────────────────────
-function ProductRow({ d, maxUnits, animate }) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 13, color: C.textMid }}>
-          <span style={{ width: 8, height: 8, borderRadius: 2, background: d.color, flexShrink: 0 }} />
-          {d.name}
-        </span>
-        <span style={{ fontFamily: "Montserrat, sans-serif", fontSize: 13, fontWeight: 700, color: C.text }}>
-          {d.units.toLocaleString()}
-        </span>
-      </div>
-      <BarH value={d.units} max={maxUnits} color={d.color} animate={animate} />
-    </div>
-  );
-}
-
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 export default function Dashboard() {
   const [animate, setAnimate] = useState(false);
@@ -300,94 +263,172 @@ export default function Dashboard() {
     }}>
 
       {/* ── Logo Bar ── */}
-      <div style={{ maxWidth: 1100, margin: "0 auto 6px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div style={{
           display: "flex", justifyContent: "space-between", alignItems: "center",
-          marginBottom: mobile ? 14 : 20, flexWrap: "wrap", gap: 10,
+          marginBottom: mobile ? 12 : 16, flexWrap: "wrap", gap: 10,
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: mobile ? 10 : 16 }}>
             <img src={PRISM_LOGO} alt="Prism Marketing"
-              height={mobile ? 28 : 38} style={{ objectFit: "contain" }} />
-            <div style={{ width: 1, height: 32, background: C.border }} />
-            <img src={AP_LOGO} alt="Aunt Porridge Uganda"
-              height={mobile ? 28 : 38} style={{ objectFit: "contain" }} />
+              style={{ height: mobile ? 28 : 40, objectFit: "contain" }}
+              crossOrigin="anonymous" />
+            <div style={{ width: 1, height: mobile ? 22 : 30, background: C.border }} />
+            <img src={AP_LOGO} alt="Aunt Porridge"
+              style={{ height: mobile ? 34 : 46, objectFit: "contain", borderRadius: 6 }}
+              crossOrigin="anonymous" />
           </div>
-          <div style={{ textAlign: "right" }}>
+          <div style={{
+            background: C.prismSoft, border: `1px solid ${C.border}`,
+            borderRadius: 8, padding: "5px 12px",
+            fontSize: 11, color: C.textMuted, fontFamily: "Hind, sans-serif",
+          }}>
+            Region:{" "}
+            <span style={{ color: C.prism, fontWeight: 700, fontFamily: "Montserrat, sans-serif" }}>
+              Jinja
+            </span>
+          </div>
+        </div>
+
+        {/* ── Title Block ── */}
+        <div style={{
+          background: `linear-gradient(135deg, ${C.prism}06 0%, ${C.orange}04 100%)`,
+          border: `1px solid ${C.border}`,
+          borderRadius: 14,
+          padding: mobile ? "14px 14px" : "22px 26px",
+          marginBottom: mobile ? 14 : 20,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
             <div style={{
-              fontFamily: "Montserrat, sans-serif", fontWeight: 700,
-              fontSize: mobile ? 13 : 16, color: C.text,
+              width: 8, height: 8, borderRadius: "50%", background: C.prism,
+              boxShadow: `0 0 10px ${C.prism}60`,
+            }} />
+            <span style={{
+              fontSize: 10, fontWeight: 700, color: C.prism,
+              letterSpacing: "0.1em", textTransform: "uppercase",
+              fontFamily: "Montserrat, sans-serif",
             }}>
-              Field Sales Report
-            </div>
-            <div style={{ fontSize: 11, color: C.textDim }}>March 2025 · Uganda</div>
+              Performance Analytics Dashboard
+            </span>
           </div>
+          <h1 style={{
+            fontSize: mobile ? 18 : 25, fontWeight: 800, margin: 0, lineHeight: 1.25,
+            fontFamily: "Montserrat, sans-serif", color: C.text,
+          }}>
+            Aunt Porridge{" "}
+            <span style={{ color: C.prism }}>—</span>{" "}
+            Jinja Market Activation
+          </h1>
+          <p style={{ color: C.textMuted, fontSize: 12, margin: "4px 0 0", fontFamily: "Hind, sans-serif" }}>
+            Campaign sales performance &amp; conversion tracking · Prepared by Prism Marketing
+          </p>
         </div>
 
         {/* ── KPI Row ── */}
         <div style={{
-          display: "flex", flexWrap: "wrap", gap: mobile ? 8 : 12,
-          marginBottom: mobile ? 16 : 22,
+          display: "flex", gap: mobile ? 8 : 12,
+          flexWrap: "wrap", marginBottom: mobile ? 14 : 20,
         }}>
-          <KPI label="Total Revenue"    value={fmt(totalRevenue)}  sub="All channels"       icon="💰" color={C.prism}  softColor={C.prismSoft}  mobile={mobile} />
-          <KPI label="Units Sold"       value={totalUnits.toLocaleString()} sub="7 SKUs"     icon="📦" color={C.orange} softColor={C.orangeSoft} mobile={mobile} />
-          <KPI label="Active Channels"  value="4"                  sub="Activations leading" icon="📡" color={C.blue}   softColor={C.blueSoft}   mobile={mobile} />
-          <KPI label="Supermarkets"     value="10"                 sub="Unique retailers"    icon="🏪" color={C.green}  softColor={C.greenSoft}  mobile={mobile} />
+          <KPI label="Total Revenue"  value={fmt(totalRevenue)} sub="All channels"    icon="💰" color={C.prism}  softColor={C.prismSoft}  mobile={mobile} />
+          <KPI label="Units Sold"     value="1,598"             sub="7 SKUs"          icon="📦" color={C.orange} softColor={C.orangeSoft} mobile={mobile} />
+          <KPI label="Shops Engaged"  value="17"                sub="4 converted"     icon="🏪" color={C.blue}   softColor={C.blueSoft}   mobile={mobile} />
+          <KPI label="Rep Revenue"    value="UGX 1.3M"          sub="11% share"       icon="🤝" color={C.purple} softColor={C.purpleSoft} mobile={mobile} />
         </div>
 
-        {/* ── Row 2: Channel Donut + Weekly Trend ── */}
+        {/* ── Main Grid ── */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: tablet ? "1fr" : "1.35fr 1fr",
-          gap: mobile ? 12 : 16,
-          marginBottom: mobile ? 12 : 16,
+          gridTemplateColumns: tablet ? "1fr" : "1fr 1fr",
+          gap: mobile ? 10 : 14,
+          marginBottom: mobile ? 10 : 14,
         }}>
 
-          {/* Channel breakdown */}
-          <Card title="Revenue by Channel">
-            <div style={{ display: "flex", gap: mobile ? 14 : 28, alignItems: "center", flexWrap: "wrap" }}>
+          {/* Channel Revenue Breakdown */}
+          <Card title="Channel Revenue Breakdown">
+            <div style={{
+              display: "flex", gap: mobile ? 14 : 22, alignItems: "center",
+              flexDirection: mobile ? "column" : "row",
+            }}>
               <div style={{ flexShrink: 0 }}>
                 <DonutChart data={channelData} size={donutSize} />
               </div>
-              <div style={{ flex: 1, minWidth: 155, display: "flex", flexDirection: "column", gap: 13 }}>
-                {channelData.map((d) => (
-                  <ChannelRow key={d.name} d={d} maxRev={maxRev} animate={animate} />
+              <div style={{ flex: 1, width: "100%", minWidth: 0, display: "flex", flexDirection: "column", gap: 0 }}>
+                {channelData.map((ch, i) => (
+                  <div key={i} style={{
+                    display: "flex", alignItems: "center", gap: 10,
+                    padding: "9px 12px",
+                    background: i % 2 === 0 ? C.prismSofter : "transparent",
+                    borderRadius: 10,
+                    marginBottom: i < channelData.length - 1 ? 4 : 0,
+                  }}>
+                    <div style={{
+                      width: 10, height: 10, borderRadius: 3,
+                      background: ch.color, flexShrink: 0,
+                    }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{
+                        display: "flex", justifyContent: "space-between",
+                        alignItems: "baseline", marginBottom: 4,
+                      }}>
+                        <span style={{ fontSize: 13, color: C.textMid, fontWeight: 500 }}>{ch.name}</span>
+                        <span style={{
+                          fontFamily: "Montserrat, sans-serif", fontSize: 12,
+                          fontWeight: 700, color: C.text,
+                        }}>
+                          {ch.pct}%
+                        </span>
+                      </div>
+                      <BarH value={ch.revenue} max={maxRev} color={ch.color} animate={animate} />
+                      <div style={{ fontSize: 10, color: C.textDim, textAlign: "right", marginTop: 2 }}>
+                        {fmt(ch.revenue)}
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
           </Card>
 
-          {/* Weekly trend + gauge */}
+          {/* Weekly Trend + GaugeArc */}
           <Card title="Weekly Revenue Trend">
             <WeeklyBars data={weeklyTrend} animate={animate} />
             <div style={{
               marginTop: 18, paddingTop: 14,
               borderTop: `1px solid ${C.borderLight}`,
-              display: "flex", justifyContent: "space-between", alignItems: "center",
-              flexWrap: "wrap", gap: 12,
+              display: "flex", justifyContent: "space-between",
+              alignItems: "center", flexWrap: "wrap", gap: 12,
             }}>
               <div>
-                <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 3 }}>Avg / week</div>
-                <div style={{ fontFamily: "Montserrat, sans-serif", fontSize: 20, fontWeight: 800, color: C.text }}>
+                <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 3 }}>Avg per week</div>
+                <div style={{
+                  fontFamily: "Montserrat, sans-serif", fontSize: 20,
+                  fontWeight: 800, color: C.text,
+                }}>
                   {fmt(Math.round(totalRevenue / weeklyTrend.length))}
                 </div>
               </div>
               <GaugeArc value={animate ? 68 : 0} size={mobile ? 110 : 130} />
             </div>
           </Card>
-        </div>
 
-        {/* ── Row 3: Products + Retail + Summary ── */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: tablet ? "1fr" : "1.5fr 1fr",
-          gap: mobile ? 12 : 16,
-        }}>
-
-          {/* Product units */}
+          {/* Product Units */}
           <Card title="Units Sold by SKU">
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {productData.map((d) => (
-                <ProductRow key={d.name} d={d} maxUnits={maxUnits} animate={animate} />
+            <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+              {productData.map((d, i) => (
+                <div key={i} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 13, color: C.textMid }}>
+                      <span style={{ width: 8, height: 8, borderRadius: 2, background: d.color, flexShrink: 0 }} />
+                      {d.name}
+                    </span>
+                    <span style={{
+                      fontFamily: "Montserrat, sans-serif", fontSize: 13,
+                      fontWeight: 700, color: C.text,
+                    }}>
+                      {d.units.toLocaleString()}
+                    </span>
+                  </div>
+                  <BarH value={d.units} max={maxUnits} color={d.color} animate={animate} />
+                </div>
               ))}
             </div>
             <div style={{
@@ -395,20 +436,22 @@ export default function Dashboard() {
               display: "flex", justifyContent: "space-between", alignItems: "center",
             }}>
               <span style={{ fontSize: 12, color: C.textMuted }}>Total units dispatched</span>
-              <span style={{ fontFamily: "Montserrat, sans-serif", fontSize: 16, fontWeight: 800, color: C.text }}>
+              <span style={{
+                fontFamily: "Montserrat, sans-serif", fontSize: 16,
+                fontWeight: 800, color: C.text,
+              }}>
                 {totalUnits.toLocaleString()} units
               </span>
             </div>
           </Card>
 
-          {/* Right column: retail + gradient summary */}
-          <div style={{ display: "flex", flexDirection: "column", gap: mobile ? 12 : 16 }}>
+          {/* Right column: supermarkets + gradient summary */}
+          <div style={{ display: "flex", flexDirection: "column", gap: mobile ? 10 : 14 }}>
 
-            {/* Top supermarkets */}
             <Card title="Top Supermarkets">
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {retailData.map((d) => (
-                  <div key={d.name} style={{
+                {retailData.map((d, i) => (
+                  <div key={i} style={{
                     display: "flex", alignItems: "center", justifyContent: "space-between",
                     padding: "10px 12px", borderRadius: 10,
                     background: C.surfaceAlt, border: `1px solid ${C.borderLight}`,
@@ -416,7 +459,8 @@ export default function Dashboard() {
                     <span style={{ fontSize: 13, color: C.textMid, fontWeight: 500 }}>{d.name}</span>
                     <span style={{
                       fontFamily: "Montserrat, sans-serif", fontSize: 12, fontWeight: 700,
-                      color: C.orange, background: C.orangeSoft, padding: "2px 9px", borderRadius: 20,
+                      color: C.orange, background: C.orangeSoft,
+                      padding: "2px 9px", borderRadius: 20,
                     }}>
                       {d.orders} orders
                     </span>
@@ -427,15 +471,14 @@ export default function Dashboard() {
                 marginTop: 12, paddingTop: 10, borderTop: `1px solid ${C.borderLight}`,
                 fontSize: 11, color: C.textDim, textAlign: "center",
               }}>
-                10 supermarkets total · 4 shown
+                10 supermarkets total · 4 shown above
               </div>
             </Card>
 
             {/* Gradient summary */}
             <div style={{
               background: `linear-gradient(135deg, ${C.prism} 0%, ${C.prismDark} 100%)`,
-              borderRadius: 16, padding: "20px 22px", color: "#fff",
-              flex: 1,
+              borderRadius: 16, padding: "20px 22px", color: "#fff", flex: 1,
             }}>
               <div style={{
                 fontSize: 10, fontWeight: 600, letterSpacing: "0.08em",
@@ -443,14 +486,18 @@ export default function Dashboard() {
               }}>
                 #1 Channel — Activations
               </div>
-              <div style={{ fontFamily: "Montserrat, sans-serif", fontSize: 28, fontWeight: 800, lineHeight: 1.1 }}>
+              <div style={{
+                fontFamily: "Montserrat, sans-serif", fontSize: 28,
+                fontWeight: 800, lineHeight: 1.1,
+              }}>
                 {fmt(channelData[0].revenue)}
               </div>
               <div style={{ fontSize: 13, opacity: 0.8, marginTop: 4 }}>
                 {channelData[0].pct}% of total revenue
               </div>
               <div style={{
-                marginTop: 16, paddingTop: 14, borderTop: "1px solid rgba(255,255,255,0.18)",
+                marginTop: 16, paddingTop: 14,
+                borderTop: "1px solid rgba(255,255,255,0.18)",
                 display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8,
               }}>
                 {channelData.slice(1).map((d) => (
@@ -458,7 +505,10 @@ export default function Dashboard() {
                     <div style={{ fontSize: 9, opacity: 0.65, textTransform: "uppercase", letterSpacing: "0.06em" }}>
                       {d.name}
                     </div>
-                    <div style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: 13, marginTop: 2 }}>
+                    <div style={{
+                      fontFamily: "Montserrat, sans-serif", fontWeight: 700,
+                      fontSize: 13, marginTop: 2,
+                    }}>
                       {(d.revenue / 1e6).toFixed(1)}M
                     </div>
                   </div>
@@ -471,7 +521,7 @@ export default function Dashboard() {
 
         {/* ── Footer ── */}
         <div style={{
-          marginTop: 28, display: "flex", alignItems: "center",
+          marginTop: 8, display: "flex", alignItems: "center",
           justifyContent: "space-between", flexWrap: "wrap", gap: 8,
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -479,7 +529,7 @@ export default function Dashboard() {
             <span style={{ fontSize: 11, color: C.textDim }}>Powered by Prism Marketing</span>
           </div>
           <span style={{ fontSize: 11, color: C.textDim }}>
-            Data: March 2025 · Aunt Porridge Uganda
+            Data: March 2025 · Aunt Porridge Uganda · Jinja
           </span>
         </div>
       </div>
